@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Just For You ❤️</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Playfair+Display:wght@600;700&display=swap');
+
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:"DM Sans",sans-serif}
+body{
+  overflow-x:hidden;
+  color:#fff;
+  background:
+    radial-gradient(circle at 20% 15%, rgba(255,132,190,.28), transparent 30%),
+    radial-gradient(circle at 80% 80%, rgba(168,117,255,.30), transparent 32%),
+    linear-gradient(135deg,#170b25,#35113f 48%,#13091f);
+}
+body:before{
+  content:"";
+  position:fixed;inset:0;pointer-events:none;opacity:.25;
+  background-image:radial-gradient(#fff 1px,transparent 1px);
+  background-size:32px 32px;
+}
+.screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;position:relative}
+.card{
+  width:min(92vw,520px);padding:38px 28px;border:1px solid rgba(255,255,255,.18);
+  border-radius:30px;background:rgba(255,255,255,.09);backdrop-filter:blur(18px);
+  box-shadow:0 25px 80px rgba(0,0,0,.35);text-align:center;
+}
+.heart{font-size:52px;animation:pulse 1.7s infinite}
+h1{font-family:"Playfair Display",serif;font-size:38px;margin:12px 0 8px}
+p{opacity:.88;line-height:1.6}
+input{
+  width:100%;padding:16px 18px;border-radius:16px;border:1px solid rgba(255,255,255,.2);
+  background:rgba(0,0,0,.22);color:#fff;font-size:17px;outline:none;margin:18px 0 12px;
+}
+input::placeholder{color:rgba(255,255,255,.55)}
+button{
+  border:0;border-radius:999px;padding:14px 26px;font-size:16px;font-weight:700;
+  color:#32112e;background:linear-gradient(135deg,#ffd1e7,#ff8fc8);
+  cursor:pointer;box-shadow:0 10px 30px rgba(255,122,190,.25);
+}
+button:active{transform:scale(.97)}
+#error{min-height:24px;color:#ffb6d8;font-size:14px}
+#secret{display:none}
+.reveal{animation:appear 1.2s ease both}
+.subtitle{font-size:18px;margin-top:0}
+.photo-wrap{
+  width:min(88vw,560px);height:min(72vh,700px);margin:28px auto 0;
+  display:flex;align-items:center;justify-content:center;position:relative;
+}
+.photo{
+  max-width:100%;max-height:100%;object-fit:contain;border-radius:24px;
+  border:2px solid rgba(255,255,255,.25);box-shadow:0 25px 70px rgba(0,0,0,.45);
+  opacity:0;transform:scale(.97);transition:opacity 1.2s ease,transform 1.2s ease;
+}
+.photo.show{opacity:1;transform:scale(1)}
+.photo.hide{opacity:0;transform:scale(1.02)}
+.dots{margin-top:18px;letter-spacing:6px;opacity:.6}
+.final{
+  display:none;min-height:100vh;align-items:center;justify-content:center;padding:28px;
+}
+.letter{
+  width:min(92vw,760px);padding:42px 30px;text-align:center;border-radius:32px;
+  background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);
+  backdrop-filter:blur(18px);box-shadow:0 30px 90px rgba(0,0,0,.4);
+}
+.letter h2{font-family:"Playfair Display",serif;font-size:44px;margin:8px 0 20px}
+.letter p{font-size:18px;line-height:1.9;max-width:620px;margin:0 auto}
+.big-heart{font-size:62px;display:block;margin-top:25px;animation:pulse 1.7s infinite}
+.float{
+  position:fixed;bottom:-40px;font-size:20px;opacity:0;pointer-events:none;
+  animation:floatUp linear forwards;z-index:5;
+}
+@keyframes pulse{50%{transform:scale(1.12)}}
+@keyframes appear{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes floatUp{0%{opacity:0;transform:translateY(0) rotate(0)}15%{opacity:.75}100%{opacity:0;transform:translateY(-110vh) rotate(35deg)}}
+@media(max-width:500px){h1{font-size:31px}.letter h2{font-size:35px}.card{padding:32px 22px}.photo-wrap{height:62vh}}
+</style>
+</head>
+<body>
+
+<section id="lock" class="screen">
+  <div class="card">
+    <div class="heart">🔒</div>
+    <h1>Secret Page</h1>
+    <p>A little something that's just for you.<br>Enter the secret password to unlock it ❤️</p>
+    <input id="password" type="password" placeholder="Enter the password..." autocomplete="off">
+    <button onclick="unlock()">UNLOCK ❤️</button>
+    <div id="error"></div>
+  </div>
+</section>
+
+<section id="secret" class="screen">
+  <div class="card reveal">
+    <div class="heart">💗</div>
+    <h1 id="unlockedTitle"></h1>
+    <p id="unlockedSubtitle" class="subtitle"></p>
+    <div class="photo-wrap">
+      <img id="photo" class="photo" src="images/photo1.jpg" alt="A memory">
+    </div>
+    <div id="dots" class="dots">• • • • • • • • •</div>
+  </div>
+</section>
+
+<section id="final" class="final">
+  <div class="letter reveal">
+    <div class="heart">💞</div>
+    <h2 id="finalTitle"></h2>
+    <p id="finalMessage"></p>
+    <span class="big-heart">❤️</span>
+  </div>
+</section>
+
+<script src="script.js"></script>
+<script>
+document.getElementById("unlockedTitle").textContent = SETTINGS.unlockedTitle;
+document.getElementById("unlockedSubtitle").textContent = SETTINGS.unlockedSubtitle;
+document.getElementById("finalTitle").textContent = SETTINGS.finalTitle;
+document.getElementById("finalMessage").innerHTML = SETTINGS.finalMessage.replace(/\n/g, "<br><br>");
+
+function unlock(){
+  const entered = document.getElementById("password").value;
+  const error = document.getElementById("error");
+
+  if(entered === SETTINGS.password){
+    document.getElementById("lock").style.display = "none";
+    document.getElementById("secret").style.display = "flex";
+    startSlideshow();
+    hearts();
+  } else {
+    error.textContent = "nope 😭 try again ❤️";
+  }
+}
+
+document.getElementById("password").addEventListener("keydown", e=>{
+  if(e.key === "Enter") unlock();
+});
+
+let index = 0, timer;
+
+function startSlideshow(){
+  const img = document.getElementById("photo");
+  const dots = document.getElementById("dots");
+  img.classList.add("show");
+
+  timer = setInterval(()=>{
+    img.classList.remove("show");
+    img.classList.add("hide");
+
+    setTimeout(()=>{
+      index++;
+      if(index >= photos.length){
+        clearInterval(timer);
+        document.getElementById("secret").style.display = "none";
+        document.getElementById("final").style.display = "flex";
+        hearts(true);
+        return;
+      }
+      img.src = photos[index];
+      dots.textContent = photos.map((_,i)=>i===index?"♥":"•").join(" ");
+      img.classList.remove("hide");
+      requestAnimationFrame(()=>img.classList.add("show"));
+    },1200);
+  }, SETTINGS.photoTime);
+}
+
+function hearts(more=false){
+  setInterval(()=>{
+    const h=document.createElement("div");
+    h.className="float";
+    h.textContent=SETTINGS.floatingEmojis[Math.floor(Math.random()*SETTINGS.floatingEmojis.length)];
+    h.style.left=Math.random()*100+"vw";
+    h.style.animationDuration=(5+Math.random()*5)+"s";
+    h.style.fontSize=(14+Math.random()*18)+"px";
+    document.body.appendChild(h);
+    setTimeout(()=>h.remove(),10000);
+  },more?250:500);
+}
+</script>
+
+</body>
+</html>
